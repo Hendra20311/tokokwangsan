@@ -1,6 +1,9 @@
- Toko Beras Kwangsan
+## Toko Beras Kwangsan
 
 **Toko Beras Kwangsan** adalah aplikasi web berbasis digital yang dirancang untuk mempermudah pengelolaan toko beras, mulai dari transaksi penjualan hingga manajemen inventaris dan laporan.
+
+## Poster Toko
+![PosterToko](https://github.com/user-attachments/assets/a91c7af2-8b87-4863-834e-67c8af24df2a)
 
 ## 📌 Deskripsi
 
@@ -27,3 +30,12 @@ Aplikasi ini ditujukan untuk digunakan oleh dua jenis pengguna utama: **Admin** 
 4. **Update Stok Sederhana**: Menambah stok saat restok barang masuk.
 5. **Pembatalan Transaksi**: Menghapus transaksi jika terjadi kesalahan input.
 6. **Logout**: Keluar dari sesi dengan aman.
+
+## Profil Developer
+
+1. Ananda Huda Firmansyah (23050974027).
+2. Iit (23050974014).
+3. Mufidahtul Istiqomah (23050974016).
+4. Hendra Fathur Rachman (23050974011).
+
+Project aplikasi Web Toko Kwangsan ini kami buat untuk memenuhi tugas dari mata kuliah Pemrograman Web pada Prodi S1 Pendidikan Teknologi Informasi dari Fakultas Teknik di Universitas Negeri Surabaya.
