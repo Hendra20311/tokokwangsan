@@ -1,0 +1,360 @@
+:root {
+    --primary: #6366f1;
+    --secondary: #4f46e5;
+    --accent: #818cf8;
+    --dark: #1e293b;
+    --light: #f8fafc;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --background: #f8fafc;
+    --text: #1e293b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+.navbar {
+    background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 0.8rem 1rem;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+#sideNavbar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background: rgba(30, 41, 59, 0.98);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1050;
+    padding-top: 70px;
+}
+
+#sideNavbar.show {
+    left: 0;
+}
+
+#sideNavbar .nav-link {
+    color: var(--light);
+    padding: 15px 25px;
+    margin: 8px 15px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#sideNavbar .nav-link:hover {
+    background: rgba(79, 70, 229, 0.1);
+    transform: translateX(5px);
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--light);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#toggleMenuBtn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-container {
+    width: 40px;
+    height: 40px;
+    background: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+}
+
+.brand-text {
+    font-weight: 600;
+    color: var(--light);
+    font-size: 1.2rem;
+}
+
+.main-content {
+    transition: margin-left 0.3s ease;
+    padding: 90px 25px 25px;
+    position: relative;
+}
+
+#logoutBtn {
+    background-color: var(--danger) !important;
+    color: white !important;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.search-section {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+input,
+button {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button.danger {
+    background: var(--danger);
+}
+
+button.danger:hover {
+    background: #dc2626;
+}
+
+button:hover {
+    background: var(--secondary);
+}
+
+.product-info {
+    background: #f1f5f9;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+th,
+td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.totals {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.payment-section {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.badge {
+    font-weight: 700;
+    /* Bikin lebih tebal */
+    color: #111827;
+    /* Warna hitam pekat tapi masih nyaman, #111827 adalah warna hitam pekat ala Tailwind */
+    background-color: #e5e7eb;
+    /* Warna latar abu terang supaya kontras */
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 0.5rem;
+    width: 80%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-body {
+    padding: 1rem;
+}
+
+.product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.close {
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 0.5rem;
+}
+
+/* Tambahkan di style.css */
+.modal-footer button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-footer button.btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.modal-footer button.btn-danger {
+    background-color: var(--danger);
+    color: white;
+}
+
+#paymentReceiptModal .modal-body {
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 1rem 2rem;
+}
+
+#paymentReceiptModal table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: monospace;
+    font-size: 12px;
+    margin-top: 0px;
+}
+
+#paymentReceiptModal table tbody tr td {
+    padding: 2px 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+#paymentReceiptModal table tbody tr td:nth-child(1) {
+    width: 50%;
+}
+
+#paymentReceiptModal table tbody tr td:nth-child(2),
+#paymentReceiptModal table tbody tr td:nth-child(3),
+#paymentReceiptModal table tbody tr td:nth-child(4),
+#paymentReceiptModal table tbody tr td:nth-child(5) {
+    text-align: right;
+    width: 12%;
+}
+
+#paymentReceiptModal .modal-footer {
+    padding: 1rem 2rem;
+}
+
+
+
+@media (max-width: 768px) {
+    .brand-text {
+        font-size: 1rem;
+    }
+
+    .logo-container {
+        width: 35px;
+        height: 35px;
+    }
+
+    .container {
+        grid-template-columns: 1fr;
+    }
+}

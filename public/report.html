@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Penjualan Modern</title>
+    
+    <!-- Assets -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #4f46e5;
+            --accent: #818cf8;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
+            --background: #f8fafc;
+            --card-background: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui;
+            background: var(--background);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 1rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        #sideNavbar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: rgba(30, 41, 59, 0.98);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1050;
+            padding-top: 70px;
+        }
+
+        #sideNavbar.show {
+            left: 0;
+        }
+
+        #sideNavbar .nav-link {
+            color: var(--light);
+            padding: 15px 25px;
+            margin: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #sideNavbar .nav-link:hover {
+            background: rgba(79, 70, 229, 0.1);
+            transform: translateX(5px);
+        }
+
+
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: var(--card-background);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+            min-height: 500px;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        button.active {
+            background: var(--success);
+        }
+
+        #toggleMenuBtn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="date"] {
+            padding: 0.5rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            background: white;
+        }
+
+        .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--light);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #toggleMenuBtn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-container {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+    }
+
+    .brand-text {
+      font-weight: 600;
+      color: var(--light);
+      font-size: 1.2rem;
+    }
+
+    .main-content {
+      transition: margin-left 0.3s ease;
+      padding: 90px 25px 25px;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .brand-text {
+        font-size: 1rem;
+      }
+
+      .logo-container {
+        width: 35px;
+        height: 35px;
+      }
+    }
+
+        /* Perbaikan utama untuk overlay dan chart */
+        .chart-container canvas {
+            position: relative;
+            z-index: 1;
+            width: 100%!important;
+            height: 100%!important;
+        }
+
+        .loading {
+            position: absolute;
+            z-index: 2;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            place-items: center;
+            font-size: 1.5rem;
+            color: var(--secondary);
+            backdrop-filter: blur(3px);
+            border-radius: 0.75rem;
+        }
+
+        .loading.active {
+            display: grid;
+        }
+
+        .pagination li {
+  cursor: pointer;
+}
+.pagination li.active a {
+  background-color: var(--primary);
+  color: white;
+}
+
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <div class="brand-container">
+        <button id="toggleMenuBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">
+          <div class="brand-container">
+            <div class="logo-container">
+              <i class="fas fa-store text-white"></i>
+            </div>
+            <span class="brand-text">Toko Beras<br class="d-md-none"> Kwangsan</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="ms-auto">
+        <button class="btn btn-danger" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <div id="sideNavbar">
+    <button class="close-btn">
+      <i class="fas fa-times"></i>
+    </button>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="homeadmin.html">
+          <i class="fas fa-home me-2"></i> Beranda
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="warehouse.html">
+          <i class="fas fa-box-open me-2"></i> Produk Toko
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="report.html">
+          <i class="fas fa-file-invoice-dollar me-2"></i> Laporan Keuangan
+        </a>
+      </li>
+      </li>
+        <li class="nav-item">
+            <a class="nav-link" href="transaksi.html">
+                <i class="fas fa-receipt me-2"></i>
+                Transaksi
+            </a>
+        </li>
+      <li class="nav-item">
+        <a class="nav-link" href="cashier.html">
+          <i class="fas fa-cash-register me-2"></i> Kasir
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="settings.html">
+          <i class="fas fa-user-cog me-2"></i> Pengaturan Akun
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="container-fluid">
+      <div class="container">
+        <h2 style="margin-bottom: 1rem; font-weight: 700; color: var(--dark);">Laporan Penjualan</h2>
+        <div class="toolbar">
+            Filter:
+            <button id="btnHarian" class="active">
+                📊 Harian
+            </button>
+            <button id="btnBulanan">
+                📈 Bulanan
+            </button>
+            <div style="flex-grow: 1"></div>
+            <input type="date" id="startDate">
+            <input type="date" id="endDate">
+            <button id="refresh">
+                🔄 Muat Ulang
+            </button>
+        </div>
+        
+        <div class="chart-container">
+            <div class="loading">Memuat data...</div>
+            <canvas id="myChart"></canvas>
+        </div>
+
+        <!-- Rincian Laporan Tabel -->
+<!-- Rincian Laporan -->
+<h3 style="margin-top: 3rem; margin-bottom: 1rem; font-weight: 700; color: var(--dark);">Rincian Laporan</h3>
+
+<!-- Filter tabel -->
+<div class="toolbar" style="margin-bottom: 1rem; align-items: center;">
+  Filter Tabel:
+  <input type="date" id="tableStartDate" style="margin-left: 0.5rem;">
+  <input type="date" id="tableEndDate" style="margin-left: 0.5rem;">
+  <button id="tableRefresh" style="margin-left: 0.5rem;">🔄 Muat Ulang</button>
+  <button id="syncBtn" style="background: var(--success); margin-left: 10px;">
+      🔄 Sinkronisasi Pemasukkan
+    </button>
+  <button id="btnPrintPdf" style="margin-left:10px; background:#2563eb; color:white;">📄 Download PDF</button>
+</div>
+
+<!-- Form tambah data pemasukkan & pengeluaran -->
+<div class="toolbar" style="margin-top: 1rem; margin-bottom: 1rem; gap: 0.5rem; flex-wrap: nowrap; align-items: center;">
+  <label for="inputDate" style="margin-right: 0.5rem; font-weight: 600;">Tanggal:</label>
+  <input type="date" id="inputDate" required>
+
+  <label for="inputPemasukkan" style="margin-left: 1rem; margin-right: 0.5rem; font-weight: 600;">Pemasukkan (Rp):</label>
+  <input type="number" id="inputPemasukkan" min="0" value="0" required style="width: 120px;">
+
+  <label for="inputPengeluaran" style="margin-left: 1rem; margin-right: 0.5rem; font-weight: 600;">Pengeluaran (Rp):</label>
+  <input type="number" id="inputPengeluaran" min="0" value="0" required style="width: 120px;">
+
+  <button id="btnAddData" style="margin-left: 1rem; background: var(--primary); color: white; font-weight: 600;">+ Tambah Data</button>
+  <button id="btnEditData" style="background: #f59e0b; color: white; font-weight: 600; margin-left: 1rem;">✏️ Edit Data</button>
+
+</div>
+
+<div id="addDataMessage" style="color: var(--danger); font-weight: 600;"></div>
+
+
+<!-- Tabel rincian -->
+<div style="overflow-x:auto; background: var(--card-background); padding: 1rem; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+  <table class="table table-striped" id="detailTable">
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Pemasukkan (Rp)</th>
+        <th>Pengeluaran (Rp)</th>
+        <th>Keuntungan (Rp)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Modal Popup -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true" aria-labelledby="messageModalLabel">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="messageModalLabel">Info</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="modalMessageContent"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Konfirmasi Tambah/Edit -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true" aria-labelledby="confirmModalLabel">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="confirmModalBody">
+        Data tanggal ini sudah ada. Apakah Anda ingin <strong>menambahkan</strong> data (jumlahkan) atau <strong>mengedit</strong> data (ganti total)?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" id="btnConfirmAdd">Tambah</button>
+        <button type="button" class="btn btn-warning" id="btnConfirmEdit">Edit</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Input Nama File PDF -->
+<div class="modal fade" id="pdfNameModal" tabindex="-1" aria-labelledby="pdfNameModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfNameModalLabel">Nama File PDF</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="pdfFilenameInput" class="form-control" placeholder="Masukkan nama file PDF" value="laporan-penjualan">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnDownloadPdf">Download PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Pagination -->
+<nav aria-label="Page navigation" style="margin-top: 1rem;">
+  <ul class="pagination" id="pagination"></ul>
+</nav>
+
+
+    </div>
+    </div>
+  </div>
+    
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+    // Konfigurasi Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyBC64i2iC9mbq9s8Xs9JdYNA7Xe1XQklw8",
+        authDomain: "tokokelontong-9dfdb.firebaseapp.com",
+        projectId: "tokokelontong-9dfdb",
+        storageBucket: "tokokelontong-9dfdb.appspot.com",
+        messagingSenderId: "96178115569",
+        appId: "1:96178115569:web:d37bf5a01d645cc8242a50",
+        measurementId: "G-LSDQMDN7V1"
+    };
+
+    
+    // Inisialisasi Firebase
+    class FirebaseApp {
+        static db;
+        
+        static init() {
+            firebase.initializeApp(firebaseConfig);
+            this.db = firebase.firestore();
+        }
+    }
+
+    // Sidebar Toggle
+    const toggleBtn = document.getElementById("toggleMenuBtn");
+    const sideNavbar = document.getElementById("sideNavbar");
+    const closeBtn = document.querySelector(".close-btn");
+
+    function toggleSidebar() {
+      const isMobile = window.innerWidth < 992;
+      sideNavbar.classList.toggle("show");
+
+      if (!isMobile && sideNavbar.classList.contains("show")) {
+        document.querySelector('.main-content').style.marginLeft = '250px';
+      } else {
+        document.querySelector('.main-content').style.marginLeft = '0';
+      }
+    }
+
+    function closeSidebar() {
+      sideNavbar.classList.remove("show");
+      document.querySelector('.main-content').style.marginLeft = '0';
+    }
+
+    // Event Listeners
+    toggleBtn.addEventListener("click", toggleSidebar);
+    closeBtn.addEventListener("click", closeSidebar);
+
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('adminSession');
+      window.location.href = 'index.html';
+    });
+
+    // Manajemen Chart
+    class SalesChart {
+        static instance;
+        
+        static init(ctx) {
+            this.instance = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { 
+                            display: true,
+                            text: 'Statistik Keuntungan',
+                            padding: 20,
+                            font: { size: 18 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => this.formatRupiah(ctx.parsed.y)
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: (value) => this.formatRupiah(value)
+                            },
+                            grid: { color: '#e2e8f0' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    },
+                    animation: {
+                        duration: 400,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+        }
+
+        static update(data) {
+    this.rawProfitData = data.map(d => d.profit); // Simpan data asli
+
+    this.instance.data.labels = data.map(d => d.label);
+    this.instance.data.datasets = [{
+        label: 'Keuntungan',
+        data: data.map(d => Math.abs(d.profit)),
+        backgroundColor: data.map(d => 
+            d.profit >= 0 ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)'
+        ),
+        borderColor: data.map(d => 
+            d.profit >= 0 ? 'rgb(16, 185, 129)' : 'rgb(239, 68, 68)'
+        ),
+        borderWidth: 1,
+        borderRadius: 4
+    }];
+
+    this.instance.options.scales.y.min = 0;
+
+    this.instance.options.plugins.tooltip.callbacks.label = (ctx) => {
+        const idx = ctx.dataIndex;
+        const val = this.rawProfitData[idx];
+        return this.formatRupiah(val);
+    };
+
+    this.instance.update();
+}
+
+
+        static formatRupiah(value) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+    }
+
+    // Utilitas
+    class Utils {
+        static parseDocId(dateString) {
+            const [dd, mm, yyyy] = dateString.match(/(\d{2})(\d{2})(\d{4})/).slice(1);
+            return new Date(`${yyyy}-${mm}-${dd}`);
+        }
+
+        static generateDateRange(start, end, type) {
+            const dates = [];
+            const current = new Date(start);
+            
+            while(current <= end) {
+                dates.push(new Date(current));
+                type === 'daily' 
+                    ? current.setDate(current.getDate() + 1)
+                    : current.setMonth(current.getMonth() + 1);
+            }
+            
+            return dates;
+        }
+    }
+
+    // Aplikasi Utama
+    class SalesDashboard {
+        static currentView = 'harian';
+        static unsubscribe;
+        
+        static async init() {
+            FirebaseApp.init();
+            SalesChart.init(document.getElementById('myChart').getContext('2d'));
+            this.setupEventListeners();
+            await this.loadData();
+        }
+
+        static async loadData() {
+            try {
+                this.toggleLoading(true);
+                
+                const start = document.getElementById('startDate').valueAsDate;
+                const end = document.getElementById('endDate').valueAsDate;
+
+                if (!start || !end) {
+                  this.toggleLoading(false);
+                  showModalMessage('Tolong masukkan rentang waktu yang benar.', 'Peringatan');
+                  return; // stop proses load data
+                }
+                
+                if(this.unsubscribe) this.unsubscribe();
+                this.unsubscribe = FirebaseApp.db.collection('penjualan')
+                    .onSnapshot(async snapshot => {
+                        const data = await this.processData(snapshot, start, end);
+                        SalesChart.update(data);
+                        this.toggleLoading(false);
+                    });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal memuat data');
+                this.toggleLoading(false);
+            }
+        }
+
+        static async processData(snapshot, start, end) {
+            const data = [];
+            
+            snapshot.forEach(doc => {
+                const date = Utils.parseDocId(doc.id);
+                if(date >= start && date <= end) {
+                    data.push({
+                        date,
+                        pemasukkan: Number(doc.data().pemasukkan) || 0,
+                        pengeluaran: Number(doc.data().pengeluaran) || 0
+                    });
+                }
+            });
+
+            return this.currentView === 'harian' 
+                ? this.processDailyData(data, start, end)
+                : this.processMonthlyData(data, start, end);
+        }
+
+        static processDailyData(data, start, end) {
+            const dates = Utils.generateDateRange(start, end, 'daily');
+            const map = new Map(dates.map(d => [d.toISOString().split('T')[0], 0])); 
+
+            data.forEach(({date, pemasukkan, pengeluaran}) => {
+                const key = date.toISOString().split('T')[0];
+                map.set(key, pemasukkan - pengeluaran);
+            });
+
+            return dates.map(date => ({
+                label: date.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' }),
+                profit: map.get(date.toISOString().split('T')[0])
+            }));
+        }
+
+        static processMonthlyData(data, start, end) {
+            const months = Utils.generateDateRange(start, end, 'monthly');
+            const map = new Map(months.map(d => [
+                `${d.getFullYear()}-${d.getMonth()}`, 0
+            ]));
+
+            data.forEach(({date, pemasukkan, pengeluaran}) => {
+                const key = `${date.getFullYear()}-${date.getMonth()}`;
+                map.set(key, (map.get(key) || 0) + (pemasukkan - pengeluaran));
+            });
+
+            return months.map(date => ({
+                label: date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }),
+                profit: map.get(`${date.getFullYear()}-${date.getMonth()}`)
+            }));
+        }
+
+        static toggleLoading(show) {
+            const loading = document.querySelector('.loading');
+            show ? loading.classList.add('active') : loading.classList.remove('active');
+        }
+
+        static setupEventListeners() {
+            const today = new Date();
+            const start = new Date(today.getFullYear(), today.getMonth(), 1);
+            const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+            document.getElementById('startDate').valueAsDate = start;
+            document.getElementById('endDate').valueAsDate = end;
+
+            document.querySelectorAll('button[id^="btn"]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('button[id^="btn"]').forEach(b => 
+                        b.classList.remove('active'));
+                    btn.classList.add('active');
+                    this.currentView = btn.id === 'btnHarian' ? 'harian' : 'bulanan';
+                    this.loadData();
+                });
+            });
+
+            document.getElementById('refresh').addEventListener('click', () => this.loadData());
+            document.getElementById('startDate').addEventListener('change', () => this.loadData());
+            document.getElementById('endDate').addEventListener('change', () => this.loadData());
+        }
+    }
+
+    class DetailTable {
+  static data = [];
+  static filteredData = [];
+  static currentPage = 1;
+  static perPage = 12;
+  static maxPages = 5;
+
+  static init() {
+    this.setupEventListeners();
+    this.setDefaultDates();
+    this.loadData();
+  }
+
+  static setupEventListeners() {
+    document.getElementById('tableRefresh').addEventListener('click', () => this.loadData());
+    document.getElementById('tableStartDate').addEventListener('change', () => this.loadData());
+    document.getElementById('tableEndDate').addEventListener('change', () => this.loadData());
+  }
+
+  static setDefaultDates() {
+    const today = new Date();
+    const start = new Date(today.getFullYear(), today.getMonth(), 1);
+    const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    document.getElementById('tableStartDate').valueAsDate = start;
+    document.getElementById('tableEndDate').valueAsDate = end;
+  }
+
+  static async loadData() {
+    try {
+      // Tampilkan loading overlay jika perlu
+
+      const start = document.getElementById('tableStartDate').valueAsDate || new Date(2000,0,1);
+      const end = document.getElementById('tableEndDate').valueAsDate || new Date(2100,0,1);
+
+      const snapshot = await FirebaseApp.db.collection('penjualan').get();
+
+      // Parsing data dan filter rentang tanggal
+      this.data = [];
+      snapshot.forEach(doc => {
+        const date = Utils.parseDocId(doc.id);
+        if (date >= start && date <= end) {
+          this.data.push({
+            date,
+            pemasukkan: Number(doc.data().pemasukkan) || 0,
+            pengeluaran: Number(doc.data().pengeluaran) || 0,
+            profit: (Number(doc.data().pemasukkan) || 0) - (Number(doc.data().pengeluaran) || 0),
+          });
+        }
+      });
+
+      this.data.sort((a,b) => a.date - b.date); // Urut tanggal naik
+
+      this.filteredData = this.data;
+      this.currentPage = 1;
+      this.renderTable();
+      this.renderPagination();
+    } catch (e) {
+      console.error('Error load detail data:', e);
+      alert('Gagal memuat rincian laporan');
+    }
+  }
+
+  static renderTable() {
+    const tbody = document.querySelector('#detailTable tbody');
+    tbody.innerHTML = '';
+
+    const startIdx = (this.currentPage - 1) * this.perPage;
+    const endIdx = startIdx + this.perPage;
+    const pageData = this.filteredData.slice(startIdx, endIdx);
+
+    if(pageData.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">Tidak ada data</td></tr>`;
+      return;
+    }
+
+    pageData.forEach(row => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${row.date.toLocaleDateString('id-ID')}</td>
+          <td>${this.formatRupiah(row.pemasukkan)}</td>
+          <td>${this.formatRupiah(row.pengeluaran)}</td>
+          <td>${this.formatRupiah(row.profit)}</td>
+        </tr>
+      `;
+    });
+  }
+
+  static renderPagination() {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    const totalPages = Math.min(Math.ceil(this.filteredData.length / this.perPage), this.maxPages);
+
+    for(let i = 1; i <= totalPages; i++) {
+      const li = document.createElement('li');
+      li.classList.add('page-item');
+      if(i === this.currentPage) li.classList.add('active');
+      li.innerHTML = `<a class="page-link">${i}</a>`;
+      li.addEventListener('click', () => {
+        this.currentPage = i;
+        this.renderTable();
+        this.renderPagination();
+      });
+      pagination.appendChild(li);
+    }
+  }
+
+  static formatRupiah(value) {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      maximumFractionDigits: 0
+    }).format(value);
+  }
+}
+
+// Fungsi untuk menambahkan data pemasukkan & pengeluaran baru ke Firestore
+async function addSalesData() {
+  const dateInput = document.getElementById('inputDate').value;
+  const pemasukkan = parseInt(document.getElementById('inputPemasukkan').value) || 0;
+  const pengeluaran = parseInt(document.getElementById('inputPengeluaran').value) || 0;
+  const messageEl = document.getElementById('addDataMessage');
+  messageEl.textContent = '';
+
+  if (!dateInput) {
+    showModalMessage('Tanggal wajib diisi!', 'Error');
+    return;
+  }
+
+  // Format tanggal ke ddmmyyyy
+  const dateObj = new Date(dateInput);
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  const docId = `${day}${month}${year}`;
+
+  try {
+    // Update atau set data pada dokumen tanggal tersebut
+    const docRef = FirebaseApp.db.collection('penjualan').doc(docId);
+    const doc = await docRef.get();
+
+    if (doc.exists) {
+      // Jika sudah ada, update jumlah pemasukkan dan pengeluaran (tambah)
+      showConfirmModal(docId, pemasukkan, pengeluaran);
+      
+    } else {
+      // Jika belum ada, buat baru
+      await docRef.set({
+        pemasukkan: pemasukkan,
+        pengeluaran: pengeluaran
+      });
+      showModalMessage(`Data berhasil ditambahkan untuk tanggal ${dateObj.toLocaleDateString('id-ID')}.`, 'Sukses');
+    }
+
+    
+
+    // Clear input
+    document.getElementById('inputPemasukkan').value = 0;
+    document.getElementById('inputPengeluaran').value = 0;
+
+    // Reload tabel & grafik supaya update langsung
+    await DetailTable.loadData();
+  } catch (error) {
+    console.error('Error menambah data:', error);
+    showModalMessage('Gagal menambahkan data.', 'Error');
+  }
+  
+}
+
+async function editSalesData() {
+  const dateInput = document.getElementById('inputDate').value;
+  const pemasukkan = parseInt(document.getElementById('inputPemasukkan').value) || 0;
+  const pengeluaran = parseInt(document.getElementById('inputPengeluaran').value) || 0;
+  const messageEl = document.getElementById('addDataMessage');
+  messageEl.textContent = '';
+
+  if (!dateInput) {
+    showModalMessage('Tanggal wajib diisi!', 'Error');
+    return;
+  }
+
+  // Format tanggal ke ddmmyyyy
+  const dateObj = new Date(dateInput);
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const year = dateObj.getFullYear();
+  const docId = `${day}${month}${year}`;
+
+  try {
+    const docRef = FirebaseApp.db.collection('penjualan').doc(docId);
+    const doc = await docRef.get();
+
+    if (doc.exists) {
+      // Update data pemasukkan dan pengeluaran secara langsung (replace)
+      await docRef.update({
+        pemasukkan: pemasukkan,
+        pengeluaran: pengeluaran
+      });
+
+      showModalMessage(`Data berhasil diedit untuk tanggal ${dateObj.toLocaleDateString('id-ID')}.`, 'Sukses');
+
+      // Reload tabel & grafik supaya update langsung
+      await DetailTable.loadData();
+    } else {
+      showModalMessage('Data untuk tanggal ini belum ada. Gunakan Tambah Data untuk memasukkan data baru.', 'Error');
+    }
+  } catch (error) {
+    console.error('Error mengedit data:', error);
+    showModalMessage('Gagal mengedit data.', 'Error');
+  }
+}
+
+function showModalMessage(message, title = 'Info') {
+  const modalTitle = document.getElementById('messageModalLabel');
+  const modalBody = document.getElementById('modalMessageContent');
+
+  modalTitle.textContent = title;
+  modalBody.textContent = message;
+
+  const modalElement = document.getElementById('messageModal');
+  const modal = new bootstrap.Modal(modalElement);
+  modal.show();
+}
+
+
+// Event listener tombol tambah data
+document.getElementById('btnAddData').addEventListener('click', e => {
+  e.preventDefault();
+  addSalesData();
+});
+
+document.getElementById('btnEditData').addEventListener('click', e => {
+  e.preventDefault();
+  editSalesData();
+});
+
+function showConfirmModal(docId, pemasukkan, pengeluaran) {
+  const confirmModalEl = document.getElementById('confirmModal');
+  const confirmModal = new bootstrap.Modal(confirmModalEl);
+
+  let messageToShow = null;
+  let messageTitle = null;
+
+  // Event untuk setelah modal konfirmasi benar-benar tertutup
+  function onHidden() {
+    if (messageToShow) {
+      showModalMessage(messageToShow, messageTitle);
+      messageToShow = null;
+      messageTitle = null;
+    }
+    confirmModalEl.removeEventListener('hidden.bs.modal', onHidden);
+  }
+
+  confirmModalEl.addEventListener('hidden.bs.modal', onHidden);
+
+  confirmModal.show();
+
+  const btnAdd = document.getElementById('btnConfirmAdd');
+  const btnEdit = document.getElementById('btnConfirmEdit');
+
+  // Bersihkan event listener lama
+  btnAdd.onclick = null;
+  btnEdit.onclick = null;
+
+  btnAdd.onclick = async () => {
+    try {
+      const docRef = FirebaseApp.db.collection('penjualan').doc(docId);
+      const doc = await docRef.get();
+      if (doc.exists) {
+        const existingData = doc.data();
+        await docRef.update({
+          pemasukkan: (existingData.pemasukkan || 0) + pemasukkan,
+          pengeluaran: (existingData.pengeluaran || 0) + pengeluaran
+        });
+      }
+      messageToShow = 'Data berhasil ditambahkan (jumlahkan).';
+      messageTitle = 'Sukses';
+      confirmModal.hide();
+      document.getElementById('inputPemasukkan').value = 0;
+      document.getElementById('inputPengeluaran').value = 0;
+
+    } catch (error) {
+      console.error('Error menambah data:', error);
+      messageToShow = 'Gagal menambahkan data.';
+      messageTitle = 'Error';
+      confirmModal.hide();
+    }
+  };
+
+  btnEdit.onclick = async () => {
+    try {
+      const docRef = FirebaseApp.db.collection('penjualan').doc(docId);
+      await docRef.update({
+        pemasukkan: pemasukkan,
+        pengeluaran: pengeluaran
+      });
+      messageToShow = 'Data berhasil diedit (diganti).';
+      messageTitle = 'Sukses';
+      confirmModal.hide();
+      document.getElementById('inputPemasukkan').value = 0;
+      document.getElementById('inputPengeluaran').value = 0;
+    } catch (error) {
+      console.error('Error mengedit data:', error);
+      messageToShow = 'Gagal mengedit data.';
+      messageTitle = 'Error';
+      confirmModal.hide();
+    }
+  };
+}
+
+// Fungsi sinkronisasi pemasukkan
+async function syncPemasukkan() {
+  const syncBtn = document.getElementById('syncBtn');
+  syncBtn.disabled = true;
+  syncBtn.textContent = '⏳ Sinkronisasi...';
+
+  try {
+    const transaksiSnapshot = await FirebaseApp.db.collection('transaksi').get();
+
+    const totals = {};
+
+    transaksiSnapshot.forEach(doc => {
+      const id = doc.id;
+      const datePart = id.split('-')[0];
+      const totalharga = Number(doc.data().totalharga) || 0;
+
+      if (!totals[datePart]) {
+        totals[datePart] = 0;
+      }
+      totals[datePart] += totalharga;
+    });
+
+    const batch = FirebaseApp.db.batch();
+
+    Object.entries(totals).forEach(([dateStr, total]) => {
+      const docRef = FirebaseApp.db.collection('penjualan').doc(dateStr);
+      batch.set(docRef, {
+        pemasukkan: total,
+        pengeluaran: 0
+      }, { merge: true });
+    });
+
+    await batch.commit();
+
+    showModalMessage('Sinkronisasi pemasukkan berhasil.', 'Sukses');
+  } catch (error) {
+    console.error('Error saat sinkronisasi:', error);
+    showModalMessage('Gagal melakukan sinkronisasi pemasukkan.', 'Error');
+  } finally {
+    syncBtn.disabled = false;
+    syncBtn.textContent = '🔄 Sinkronisasi Pemasukkan';
+  }
+}
+
+// Event listener tombol sinkronisasi
+document.getElementById('syncBtn').addEventListener('click', () => {
+  syncPemasukkan();
+});
+
+const pdfNameModalEl = document.getElementById('pdfNameModal');
+const pdfNameModal = new bootstrap.Modal(pdfNameModalEl);
+
+document.getElementById('btnPrintPdf').addEventListener('click', () => {
+  // Tampilkan modal input nama file
+  pdfNameModal.show();
+});
+
+document.getElementById('btnDownloadPdf').addEventListener('click', () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  let filename = document.getElementById('pdfFilenameInput').value.trim();
+  if (!filename) {
+    alert('Nama file tidak boleh kosong!');
+    return;
+  }
+  if (!filename.toLowerCase().endsWith('.pdf')) {
+    filename += '.pdf';
+  }
+
+  // Tambah judul
+  doc.setFontSize(14);
+  doc.text("Laporan Penjualan Dan Keuntungan Toko Kwangsan", 14, 15);
+
+  // Siapkan data tabel
+  const columns = ["Tanggal", "Pemasukkan (Rp)", "Pengeluaran (Rp)", "Keuntungan (Rp)"];
+  const rows = [];
+
+  const tbodyRows = document.querySelectorAll('#detailTable tbody tr');
+  tbodyRows.forEach(tr => {
+    const rowData = [];
+    tr.querySelectorAll('td').forEach(td => {
+      rowData.push(td.textContent.trim());
+    });
+    rows.push(rowData);
+  });
+
+  // Buat tabel di PDF mulai y=20
+  doc.autoTable({
+    head: [columns],
+    body: rows,
+    startY: 20,
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [99, 102, 241] },
+  });
+
+  // Simpan PDF dan tutup modal
+  doc.save(filename);
+  pdfNameModal.hide();
+});
+
+
+
+
+    SalesDashboard.init();
+    DetailTable.init();
+</script>
+
+
+</body>
+</html>

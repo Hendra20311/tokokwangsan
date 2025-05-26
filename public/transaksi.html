@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --secondary: #4f46e5;
+      --accent: #818cf8;
+      --dark: #1e293b;
+      --light: #f8fafc;
+    }
+
+    body {
+      background-color: #f1f5f9;
+      min-height: 100vh;
+    }
+
+    .navbar {
+      background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 0.8rem 1rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+    }
+
+    #sideNavbar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: rgba(30, 41, 59, 0.98);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1050;
+      padding-top: 70px;
+    }
+
+    #sideNavbar.show {
+      left: 0;
+    }
+
+    #sideNavbar .nav-link {
+      color: var(--light);
+      padding: 15px 25px;
+      margin: 8px 15px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #sideNavbar .nav-link:hover {
+      background: rgba(79, 70, 229, 0.1);
+      transform: translateX(5px);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--light);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #toggleMenuBtn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .brand-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-container {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
+    }
+
+    .brand-text {
+      font-weight: 600;
+      color: var(--light);
+      font-size: 1.2rem;
+    }
+
+    .main-content {
+      transition: margin-left 0.3s ease;
+      padding: 90px 25px 25px;
+      position: relative;
+    }
+
+    @media (max-width: 768px) {
+      .brand-text {
+        font-size: 1rem;
+      }
+
+      .logo-container {
+        width: 35px;
+        height: 35px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <div class="brand-container">
+        <button id="toggleMenuBtn">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand" href="#">
+          <div class="brand-container">
+            <div class="logo-container">
+              <i class="fas fa-store text-white"></i>
+            </div>
+            <span class="brand-text">Toko Beras<br class="d-md-none"> Kwangsan</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="ms-auto">
+        <button class="btn btn-danger" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <div id="sideNavbar">
+    <button class="close-btn">
+      <i class="fas fa-times"></i>
+    </button>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="homeadmin.html">
+          <i class="fas fa-home me-2"></i> Beranda
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="warehouse.html">
+          <i class="fas fa-box-open me-2"></i> Produk Toko
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="report.html">
+          <i class="fas fa-file-invoice-dollar me-2"></i> Laporan Keuangan
+        </a>
+      </li>
+      </li>
+        <li class="nav-item">
+            <a class="nav-link" href="transaksi.html">
+                <i class="fas fa-receipt me-2"></i>
+                Transaksi
+            </a>
+        </li>
+      <li class="nav-item">
+        <a class="nav-link" href="cashier.html">
+          <i class="fas fa-cash-register me-2"></i> Kasir
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="settings.html">
+          <i class="fas fa-user-cog me-2"></i> Pengaturan Akun
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="container-fluid">
+  <h3 class="mb-3">Daftar Transaksi</h3>
+  
+  <!-- Filter Tanggal -->
+<div class="mb-3 row g-2 align-items-center">
+  <div class="col-auto">
+    <label for="filterTanggalMulai" class="form-label">Dari Tanggal:</label>
+    <input type="date" id="filterTanggalMulai" class="form-control" />
+  </div>
+  <div class="col-auto">
+    <label for="filterTanggalSampai" class="form-label">Sampai Tanggal:</label>
+    <input type="date" id="filterTanggalSampai" class="form-control" />
+  </div>
+  <div class="col-auto align-self-end">
+    <button id="btnFilter" class="btn btn-primary">Filter</button>
+    <button id="btnReset" class="btn btn-secondary">Reset</button>
+  </div>
+</div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered" id="transaksiTable">
+      <thead class="table-dark">
+        <tr>
+          <th>ID Transaksi</th>
+          <th>Diskon (per produk)</th>
+          <th>Harga (per produk)</th>
+          <th>Harga Awal</th>
+          <th>ID Produk</th>
+          <th>Jumlah</th>
+          <th>Tanggal</th>
+          <th>Total Bayar</th>
+          <th>Total Diskon</th>
+          <th>Total Harga</th>
+          <th>Total Kembalian</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    onSnapshot,
+    query,
+    where,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+  const app = initializeApp({
+    apiKey: "AIzaSyBC64i2iC9mbq9s8Xs9JdYNA7Xe1XQklw8",
+    authDomain: "tokokelontong-9dfdb.firebaseapp.com",
+    projectId: "tokokelontong-9dfdb",
+    storageBucket: "tokokelontong-9dfdb.appspot.com",
+    messagingSenderId: "96178115569",
+    appId: "1:96178115569:web:d37bf5a01d645cc8242a50",
+    measurementId: "G-LSDQMDN7V1"
+  });
+
+  const db = getFirestore(app);
+  const tableBody = document.querySelector('#transaksiTable tbody');
+  const filterMulai = document.getElementById('filterTanggalMulai');
+  const filterSampai = document.getElementById('filterTanggalSampai');
+  const btnFilter = document.getElementById('btnFilter');
+  const btnReset = document.getElementById('btnReset');
+  let unsubscribe = null;
+
+  function formatArrayData(str) {
+    if (!str) return '-';
+    return str.split(',').map(s => s.trim()).join(', ');
+  }
+
+  function formatTimestamp(timestamp) {
+    if (!timestamp) return '-';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleString('id-ID', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  function renderTransaksi(doc) {
+    const data = doc.data();
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${doc.id}</td>
+      <td>${formatArrayData(data.diskon)}</td>
+      <td>${formatArrayData(data.harga)}</td>
+      <td>${data.hargaawal?.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) || '-'}</td>
+      <td>${formatArrayData(data.id)}</td>
+      <td>${formatArrayData(data.jumlah)}</td>
+      <td>${formatTimestamp(data.tanggal)}</td>
+      <td>${data.totalbayar?.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) || '-'}</td>
+      <td>${data.totaldiskon?.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) || '-'}</td>
+      <td>${data.totalharga?.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) || '-'}</td>
+      <td>${data.totalkembalian?.toLocaleString('id-ID', {style: 'currency', currency: 'IDR'}) || '-'}</td>
+    `;
+    tableBody.appendChild(row);
+  }
+
+  function loadTransaksiByDateRange(startDate, endDate) {
+    if (unsubscribe) unsubscribe(); // stop previous listener
+    tableBody.innerHTML = ''; // kosongkan tabel dulu
+
+    const transaksiCol = collection(db, 'transaksi');
+
+    // Jika dua tanggal kosong -> ambil semua data tanpa filter tanggal
+    if (!startDate && !endDate) {
+      const q = query(transaksiCol, orderBy('tanggal', 'desc'));
+      unsubscribe = onSnapshot(q, snapshot => {
+        if (snapshot.empty) {
+          tableBody.innerHTML = `<tr><td colspan="11" class="text-center">Tidak ada transaksi.</td></tr>`;
+          return;
+        }
+        tableBody.innerHTML = '';
+        snapshot.forEach(doc => renderTransaksi(doc));
+      }, error => {
+        console.error('Error loading transaksi:', error);
+      });
+      return;
+    }
+
+    // Jika hanya startDate diisi, ambil transaksi mulai dari startDate sampai sekarang
+    if (startDate && !endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const q = query(transaksiCol,
+        where('tanggal', '>=', start),
+        orderBy('tanggal', 'desc')
+      );
+      unsubscribe = onSnapshot(q, snapshot => {
+        if (snapshot.empty) {
+          tableBody.innerHTML = `<tr><td colspan="11" class="text-center">Tidak ada transaksi pada tanggal mulai yang dipilih.</td></tr>`;
+          return;
+        }
+        tableBody.innerHTML = '';
+        snapshot.forEach(doc => renderTransaksi(doc));
+      }, error => {
+        console.error('Error loading transaksi:', error);
+      });
+      return;
+    }
+
+    // Jika hanya endDate diisi, ambil transaksi sampai endDate
+    if (!startDate && endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      const q = query(transaksiCol,
+        where('tanggal', '<=', end),
+        orderBy('tanggal', 'desc')
+      );
+      unsubscribe = onSnapshot(q, snapshot => {
+        if (snapshot.empty) {
+          tableBody.innerHTML = `<tr><td colspan="11" class="text-center">Tidak ada transaksi sampai tanggal yang dipilih.</td></tr>`;
+          return;
+        }
+        tableBody.innerHTML = '';
+        snapshot.forEach(doc => renderTransaksi(doc));
+      }, error => {
+        console.error('Error loading transaksi:', error);
+      });
+      return;
+    }
+
+    // Jika kedua tanggal diisi, ambil transaksi antara startDate dan endDate
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      const q = query(transaksiCol,
+        where('tanggal', '>=', start),
+        where('tanggal', '<=', end),
+        orderBy('tanggal', 'desc')
+      );
+      unsubscribe = onSnapshot(q, snapshot => {
+        if (snapshot.empty) {
+          tableBody.innerHTML = `<tr><td colspan="11" class="text-center">Tidak ada transaksi pada rentang tanggal ini.</td></tr>`;
+          return;
+        }
+        tableBody.innerHTML = '';
+        snapshot.forEach(doc => renderTransaksi(doc));
+      }, error => {
+        console.error('Error loading transaksi:', error);
+      });
+      return;
+    }
+  }
+
+  // Event Listener tombol filter
+  btnFilter.addEventListener('click', () => {
+    const mulai = filterMulai.value;
+    const sampai = filterSampai.value;
+    loadTransaksiByDateRange(mulai, sampai);
+  });
+
+  // Event Listener tombol reset
+  btnReset.addEventListener('click', () => {
+    filterMulai.value = '';
+    filterSampai.value = '';
+    loadTransaksiByDateRange('', '');
+  });
+
+  // Load semua transaksi saat pertama kali load page
+  loadTransaksiByDateRange('', '');
+
+
+    // Sidebar Toggle
+    const toggleBtn = document.getElementById("toggleMenuBtn");
+    const sideNavbar = document.getElementById("sideNavbar");
+    const closeBtn = document.querySelector(".close-btn");
+
+    function toggleSidebar() {
+      const isMobile = window.innerWidth < 992;
+      sideNavbar.classList.toggle("show");
+
+      if (!isMobile && sideNavbar.classList.contains("show")) {
+        document.querySelector('.main-content').style.marginLeft = '250px';
+      } else {
+        document.querySelector('.main-content').style.marginLeft = '0';
+      }
+    }
+
+    function closeSidebar() {
+      sideNavbar.classList.remove("show");
+      document.querySelector('.main-content').style.marginLeft = '0';
+    }
+
+    // Event Listeners
+    toggleBtn.addEventListener("click", toggleSidebar);
+    closeBtn.addEventListener("click", closeSidebar);
+
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('adminSession');
+      window.location.href = '/';
+    });
+  </script>
+
+</body>
+</html>
